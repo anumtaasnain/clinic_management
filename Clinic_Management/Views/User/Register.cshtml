@@ -1,0 +1,362 @@
+﻿@{
+    Layout = null;
+}
+
+@model Clinic_Management.Models.User
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+    <link rel="stylesheet" href="~/assets/css/styles.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    <!-- jQuery (Toastr ke liye required) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "10000", // 10 seconds
+            "extendedTimeOut": "1000"
+        };
+
+    </script>
+</head>
+
+<body>
+    <div class="page-wrapper d-flex align-items-center justify-content-center min-vh-100">
+        <div class="col-md-8 col-lg-6 col-xxl-4">
+            <div class="card">
+                <div class="card-body">
+                    <a href="./index.html" class="text-center d-block py-3">
+                        <img src="~/assets/images/logos/dark-logo.svg" width="180" alt="">
+                    </a>
+
+                    <p class="text-center fw-bold">Select Registration Type</p>
+                    <div class="mb-3">
+                        <select id="userType" name="userType" class="form-select">
+                            <option value="user" selected="@(TempData["userType"] == null ? "selected" : null)">User</option>
+                            <option value="patient" selected="@(TempData["userType"] != null ? "selected" : null)">Patient</option>
+                        </select>
+                    </div>
+
+                    <form id="userForm" asp-controller="User" asp-action="Register" method="post" enctype="multipart/form-data">
+                        <h4 class="text-center">User Registration</h4>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Name</label>
+                            <input asp-for="Name" class="form-control">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" value="@ViewBag.email" class="emailField form-control">
+                            <span class="email_validation text-danger"></span>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">Phone</label>
+                            <input asp-for="Phone" class="form-control">
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control">
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control">
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-4">
+                            <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                            <input asp-for="ConfirmPassword" class="form-control">
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Image" class="form-label">Image <span style="font-weight:500;">(Optional)</span></label>
+                            <input type="file" onchange="document.querySelector('#old_image').src=window.URL.createObjectURL(this.files[0])" asp-for="Image" class="form-control">
+                            <img src="" height="125px" id="old_image" class="mt-3" margin-bottom:20px;" />
+                            <span asp-validation-for="Image" class="text-danger"></span>
+                        </div>
+
+                        <div>
+                            <label class="mb-4">Remember Me</label>
+                            <input type="checkbox" value="true" name="remember" />
+                        </div>
+                        <div class="g-recaptcha"
+                             data-sitekey="@ViewBag.SiteKey"
+                             data-callback="onRecaptchaSuccess"></div>
+
+
+                        <input type="hidden" asp-for="RecaptchaToken" id="recaptchaToken" />
+                        <span asp-validation-for="RecaptchaToken" class="text-danger"></span>
+                        <input type="submit" class="btn btn-primary w-100 mt-4" value="Sign Up">
+                        <div class="d-flex align-items-center justify-content-center mt-4">
+                            <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
+                        </div>
+                    </form>
+
+                    <form id="patientForm" asp-controller="User" asp-action="Register" enctype="multipart/form-data" method="post" style="display: none;">
+                        <h4 class="text-center">Patient Registration</h4>
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input asp-for="Name" class="form-control">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input asp-for="Phone" class="form-control">
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control">
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Email" value="@ViewBag.email" class="emailField form-control">
+                            <span class="email_validation text-danger"></span>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control">
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <input asp-for="ConfirmPassword" class="form-control">
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select asp-for="Gender" class="form-control" asp-items="Html.GetEnumSelectList<Clinic_Management.Models.User._Gender>()">
+                            </select>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Medical History</label>
+                            <textarea asp-for="MedicalHistory" class="form-control"></textarea>
+                            <span asp-validation-for="MedicalHistory" class="text-danger"></span>
+                        </div>
+                        <br />
+                        <label class="mt-1 mb-4">Remember Me</label>
+                        <input type="checkbox" value="true" name="remember" />
+                        <div class="g-recaptcha"
+                             data-sitekey="@ViewBag.SiteKey"
+                             data-callback="onRecaptchaSuccess"></div>
+
+
+                        <input type="hidden" asp-for="RecaptchaToken" id="recaptchaToken" />
+                        <span asp-validation-for="RecaptchaToken" class="text-danger"></span>
+
+                        <input type="submit" class="btn btn-primary w-100 mt-4" value="Sign Up">
+                        <div class="d-flex align-items-center justify-content-center mt-4 mb-2">
+                            <a class="text-primary fw-bold ms-2" asp-controller="User" asp-action="Login">Already have an account</a>
+                        </div>
+                    </form>
+                    <div class="d-flex align-items-center justify-content-center mt-5">
+                        <!-- First Modal -->
+                        <a class="text-primary fw-bold ms-2 btn w-100" style="border-color:#5D87FF;" data-bs-toggle="modal" data-bs-target="#googleRoleModal">
+                            <img src="~/userImages/google.png" height="35px" width="35px"> Sign up with Google
+                        </a>
+
+                        <div class="modal fade" id="googleRoleModal" tabindex="-1" aria-labelledby="googleRoleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="googleRoleModalLabel">Sign up as:</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body d-flex justify-content-around">
+                                        <a class="btn btn-outline-primary" href="@Url.Action("GoogleLogin", "Account", new { role = "user" })">User</a>
+                                        <button class="btn btn-outline-success" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#patientExtraInfoModal">Patient</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Second Modal for Patient Extra Info -->
+                        <div class="modal fade" id="patientExtraInfoModal" tabindex="-1" aria-labelledby="patientExtraInfoModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="get" action="@Url.Action("GoogleLogin", "Account", new { role = "patient" })" id="patientGoogleForm">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="patientExtraInfoModalLabel">Patient Information</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="role" value="patient" />
+                                            <div class="mb-3">
+                                                <label for="gender" class="form-label">Gender</label>
+                                                <select class="form-control" asp-for="Gender" id="Gendergoogle" name="Gendergoogle" asp-items="Html.GetEnumSelectList<Clinic_Management.Models.User._Gender>()">
+                                                    <option selected disabled>Select Gender</option>
+                                                </select>
+
+
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="medicalHistory" class="form-label">Medical History</label>
+                                                <textarea class="form-control" id="MedicalHistorygoogle" name="MedicalHistorygoogle" asp-for="MedicalHistory" rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Continue with Google</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function onRecaptchaSuccess(token) {
+            document.getElementById("recaptchaToken").value = token;
+        }
+    </script>
+
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#userType").change(function () {
+                var selected = $(this).val();
+                if (selected === "user") {
+                    $("#userForm").show();
+                    $("#patientForm").hide();
+                } else {
+                    $("#userForm").hide();
+                    $("#patientForm").show();
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            function toggleForms() {
+                var selected = $("#userType").val();
+                if (selected === "user") {
+                    $("#userForm").show();
+                    $("#patientForm").hide();
+                } else {
+                    $("#userForm").hide();
+                    $("#patientForm").show();
+                }
+            }
+            toggleForms();
+
+            $("#userType").on("change", function () {
+                toggleForms();
+            })
+        })
+    </script>
+
+    <script src="~/assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="~/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+        @if (TempData["email_err"] != null)
+        {
+            <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["email_err"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                                                                                            });
+            </text>
+        }
+        @if (TempData["error"] != null)
+        {
+            <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                                                                                                        });
+            </text>
+        }
+                                                                    });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            $(".emailField").on('blur', function (e) {
+                var email = $(this).val();
+
+                $.ajax({
+                    url: "/User/checkEmail",
+                    type: "GET",
+                    data: { email: email },
+                    success: function (response) {
+                        if (response !== "") {
+                            $(".email_validation").text(response);
+                        } else {
+                            $(".email_validation").text("");
+                        }
+                    }
+                });
+            });
+
+            
+
+        });
+    </script>
+    <script>
+        $("#patientGoogleForm").on("submit", function (e) {
+            e.preventDefault();
+
+            var gender = $("#Gendergoogle").val();
+            var medicalhistory = $("#MedicalHistorygoogle").val().trim();
+
+            if (gender == null || medicalhistory == "") {
+                toastr.clear();
+                toastr.error('Please fill all fields');
+                return false;
+            }
+
+            if(medicalhistory.length < 10){
+                toastr.clear();
+                toastr.error("Medical History must be greater than 10 characters");
+                return false;
+            }
+
+            this.submit();
+        });
+    </script>
+
+    @if (accessor.HttpContext.Request.Cookies["remember_info_shown"] == null)
+    {
+        <script>
+            toastr.info("Check 'Remember me' to stay logged in on this device—no need to sign in again until you log out.");
+
+            document.cookie = "remember_info_shown=true; path=/";
+        </script>
+    }
+
+</body>
+</html>
+

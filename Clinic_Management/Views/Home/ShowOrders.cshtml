@@ -1,0 +1,104 @@
+﻿@model List<Order>
+
+<div class="shadow-sm bg-primary border-top py-3 mb-4">
+    <div class="container">
+        <a asp-controller="Home" asp-action="Index" style="color:white;font-size:20px;margin-right:30px;"> Home / </a>
+        <a asp-controller="Home" asp-action="CartItems" style="color:white;font-size:20px;"> My Orders / </a>
+    </div>
+</div>
+
+<div class="container-fluid p-3 mb-3">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Orders Details</h4>
+                </div>
+                @if (Model.Any())
+                {
+
+
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th> Order Id </th>
+                                    <th> User Name </th>
+                                    <th> Price </th>
+                                    <th> Date </th>
+                                    <th> Payment Status </th>
+                                    <th> Deleivery Status </th>
+                                    <th> View </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var orders in Model)
+                                {
+
+
+                                    <tr>
+                                        <td>@orders.Id</td>
+                                        <td>@orders.User.Name</td>
+                                        <td>@orders.TotalAmount</td>
+                                        <td>@orders.OrderDate</td>
+                                        <td>
+                                            @if (orders.PaymentStatus == "Pending")
+                                            {
+
+                                                <span class="text-warning p-1 text-bold">Pending</span>
+                                            }
+                                            else if (orders.PaymentStatus == "Paid")
+                                            {
+
+                                                <span class="text-success p-1 text-bold">Confirmed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger p-1 text-bold">Unknown Status</span>
+
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @if (orders.OrderStatus == "Pending")
+                                            {
+                                                <span class="text-warning p-1 text-bold">Pending</span>
+                                            }
+
+                                            else if (orders.OrderStatus == "Completed")
+                                            {
+                                                <span class="text-success p-1 text-bold">Completed</span>
+                                            }
+                                            else if (orders.OrderStatus == "Cancelled")
+                                            {
+                                                <span class="text-danger p-1 text-bold">Cancelled</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger p-1 text-bold">Unknown Status</span>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            <a asp-controller="Home" asp-action="ViewOrder" asp-route-id="@orders.Id"
+                                               class="btn btn-info">View</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <hr>
+                    </div>
+                }else if(!accessor.HttpContext.Session.Keys.Contains("id")){
+                    <h2 class="text-center mt-4 mb-4">You are not logged in to view the orders</h2>
+                }
+                else
+                {
+
+                    <h2 class="text-center mt-4 mb-4">You Have No Orders!</h2>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

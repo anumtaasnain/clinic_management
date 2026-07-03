@@ -1,0 +1,109 @@
+﻿@model Clinic_Management.Models.User
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Add Staff Here</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-controller="Admin" asp-action="AddStaff" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label">Name</label>
+                                <input asp-for="Name" class="form-control">
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Email" class="form-label">Email</label>
+                                <input asp-for="Email" class="form-control">
+                                <span asp-validation-for="Email" id="email_confirm" class="text-danger"></span>
+                                <span id="email_validation" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Password" class="form-label">Password</label>
+                                <input asp-for="Password" class="form-control">
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
+                                <input asp-for="ConfirmPassword" class="form-control">
+                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Staff_Role" class="form-label">Staff Role</label>
+                                <select asp-for="Staff_Role" class="form-control" asp-items="Html.GetEnumSelectList<Clinic_Management.Models.User.StaffRole>()">
+                                    <option selected disabled>Select Staff Role</option>
+                                </select>
+                                <span asp-validation-for="Staff_Role" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Image" class="form-label">Image</label>
+                                <input type="file" asp-for="Image" class="form-control">
+                                <span asp-validation-for="Image" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["email_err"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["email_err"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                    });
+        </text>
+    }
+    @if (TempData["error"] != null)
+    {
+        <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                        });
+        </text>
+    }
+                });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#Email").on('blur', function (e) {
+            var email = $("#Email").val();
+
+            $.ajax({
+                url: "/User/checkEmail",
+                type: "GET",
+                data: { email: email },
+                success: function (response) {
+                    if (response !== "") {
+                        console.log(response);
+                        var email_confirm = $("#email_confirm").text();
+                        $("#email_confirm").empty();
+                        $("#email_validation").text(response);
+                    } else {
+                        $("#email_validation").text("");
+                    }
+                }
+            });
+        });
+    });
+
+
+</script>

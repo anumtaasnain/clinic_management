@@ -1,0 +1,135 @@
+﻿@model List<Clinic_Management.Models.DoctorTimeSlot>
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Forms</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-controller="Doctor" asp-action="EditSlots" method="post">
+
+                            @foreach (var times in Model)
+                            {
+                                    <input type="hidden" value="@times.Id" name="SlotIds[]" />
+                                    <input type="hidden" value="@times.Date" name="SlotDate" />
+                                    <div class="time-slot mt-3">
+                                        <div class="mb-3">
+                                            <label class="form-label">Start Time</label>
+                                            <input type="time" value="@times.StartTime" name="StartTime[]" class="form-control">
+                                            <span class="text-danger"></span>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">End Time</label>
+                                            <input type="time" value="@times.EndTime" name="EndTime[]" class="form-control">
+                                            <span class="text-danger"></span>
+                                        </div>
+                                        <button type="button" class="btn btn-danger btn-sm remove_slot" data-slot-id="@times.Id">Remove</button>
+                                    </div>
+                                    <hr />
+                            }
+
+                            <div id="new-time-slots">
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm" style="float: right;">Submit</button>
+                        </form>
+
+                    </div>
+
+                </div>
+                <button id="add-slot" class="btn btn-primary btn-sm">Add Slot</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                                                                });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Done!',
+                    text: '@TempData["success"]',
+                    icon: 'success',
+                    confirmButtonText: 'Okay'
+                                                                                                                                        });
+        </text>
+    }
+                                                        });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".remove_slot").on('click', function (e) {
+            e.preventDefault();
+
+            var confirmation = confirm("Are You Sure To Delete This Slot?");
+
+            if (confirmation) {
+                var slot_id = $(this).data("slot-id");
+
+                // url= `/Doctor/remove_slot/${slot_id}`
+
+                // alert(url);
+
+                $.ajax({
+                    url: '@Url.Action("RemoveSlot", "Doctor")/' + slot_id,
+                    type: "POST",
+                    data: {
+                        slot_id: slot_id
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response);
+                        Swal.fire({
+                            title: 'Done!',
+                            text: 'Slot Removed Successfully',
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                        });
+                        $(this).closest('.time-slot').remove();
+                    }.bind(this)
+                });
+
+            }
+        })
+
+        $('#add-slot').click(function () {
+            const newSlotContainer = $('#new-time-slots');
+            const newSlotHTML = `
+                            <div class="new-time-slot mt-3">
+                                <div class="mb-3">
+                                    <label for="newStartTime" class="form-label">Start Time</label>
+                                    <input type="time" class="form-control" required name="NewStartTime[]" id="newStartTime" aria-describedby="emailHelp">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newEndTime" class="form-label">End Time</label>
+                                    <input type="time" class="form-control" required name="NewEndTime[]" id="newEndTime">
+                                </div>
+                                <button type="button" class="remove-slot btn btn-warning btn-sm">Remove</button>
+                            </div>
+                        `;
+            newSlotContainer.append(newSlotHTML);
+        });
+
+        $(document).on('click', '.remove-slot', function () {
+            $(this).closest('.new-time-slot').remove();
+        });
+    })
+</script>

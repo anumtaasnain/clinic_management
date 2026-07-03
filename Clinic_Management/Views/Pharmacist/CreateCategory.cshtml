@@ -1,0 +1,54 @@
+﻿@model Clinic_Management.Models.Category
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Add Category Here</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-controller="Pharmacist" asp-action="CreateCategory" method="post">
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label">Name</label>
+                                <input asp-for="Name" class="form-control">
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                            Swal.fire({
+                                title: 'Done!',
+                            text: '@TempData["success"]',
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                                                    });
+        </text>
+    }
+                    });
+</script>

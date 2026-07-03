@@ -1,0 +1,31 @@
+﻿@model List<Clinic_Management.Models.Category>
+
+<h2>Medicine Stock Report</h2>
+<h2>Medicine Stock Report</h2>
+<h2 class="text-center">Categories</h2>
+<a class="btn btn-primary mb-3" asp-controller="Pharmacist" asp-action="CreateCategory">Add Category</a>
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Id</td>
+                <td>@category.Name</td>
+                <td><a asp-controller="Pharmacist" asp-action="EditCategory" asp-route-id="@category.Id" class="btn btn-warning btn-sm">Edit</a></td>
+                <td>
+                    <form method="post" asp-controller="Pharmacist" asp-action="DeleteCategory" asp-route-id="@category.Id">
+                        <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

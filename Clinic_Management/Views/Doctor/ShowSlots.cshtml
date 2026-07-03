@@ -1,0 +1,60 @@
+﻿@model List<DateTime>
+<h2>hello</h2>
+<h2>hello</h2>
+<h2 class="text-center">Slots</h2>
+<a asp-controller="Doctor" asp-action="AddSlots" class="btn btn-primary">Add Slots</a>
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slots in Model)
+        {
+
+            <tr>
+                <td>@slots</td>
+                <td>
+                    <a asp-controller="Doctor"
+                       asp-action="EditSlot"
+                       asp-route-id="@accessor.HttpContext.Session.GetString("id")"
+                       asp-route-date="@slots.ToString("yyyy-MM-ddTHH:mm:ss")"
+                       class="btn btn-primary btn-sm">Edit</a>
+                </td>
+
+                <td><a asp-controller="Doctor" asp-action="DeleteSlot" asp-route-id="@accessor.HttpContext.Session.GetString("id")" asp-route-date="@slots.Date" class="btn btn-primary btn-sm">Delete</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                                                                            });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Done!',
+                    text: '@TempData["success"]',
+                    icon: 'success',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                    });
+        </text>
+    }
+                                                            });
+</script>

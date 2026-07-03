@@ -1,0 +1,335 @@
+﻿@model List<Seminar>
+
+    <h2>hello</h2>
+        <h2>hello</h2>
+<h2 class="text-center">Seminars</h2>
+<a asp-controller="Doctor" asp-action="AddSeminar" class="btn btn-primary">Add Seminar</a>
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Date Time</th>
+            <th>Registration</th>
+            <th>Approve</th>
+            <th>Image</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var seminars in Model)
+        {
+
+            <tr>
+                <td>@seminars.Id</td>
+                <td>@seminars.Title</td>
+                <td>@seminars.Description</td>
+                <td>@seminars.DateTime</td>
+                <td>@seminars.Registration</td>
+                <td>@seminars.Approve</td>
+                <td><img height="100px" src="~/SeminarImages/@seminars.Image" /></td>
+                <input type="hidden" class="seminarId" value="@seminars.Id" />
+                <td>
+                    <button class="btn btn-success btn-sm m-1 viewParticipant" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal2_@seminars.Id">
+                        Participants
+                    </button>
+                    @{
+                        if (seminars.Registration == Seminar._Registration.Open)
+                        {
+                            <button data-seminar-id="@seminars.Id" title="Close Registration" class="btn btn-warning m-1 btn-sm closeRegistration">Close</button>
+                        }
+                        else
+                        {
+                            <button data-seminar-id="@seminars.Id" title="Open Registration" class="btn btn-success m-1 btn-sm openRegistration">Open</button>
+                        }
+                    }
+                    <a asp-controller="Doctor" asp-action="EditSeminar" asp-route-id="@seminars.Id" class="btn btn-primary m-1 btn-sm">Edit</a>
+                    
+                    <!-- Modal -->
+                    <div class="modal fade open-modal" id="exampleModal2_@seminars.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel2_@seminars.Id">Participants Detail</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered table-striped table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Created</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="participants">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a asp-controller="Doctor" asp-action="DeleteSeminar" asp-route-id="@seminars.Id" class="btn btn-danger btn-sm m-1">Delete</a>
+                    @{
+                        if (Convert.ToInt32(accessor.HttpContext.Session.GetString("role")) == 1)
+                        {
+                            if (seminars.Approve == Seminar._Approve.Yes)
+                            {
+                                <button disabled class="btn btn-success btn-sm">Approved</button>
+                            }
+                            else
+                            {
+
+                                <button type="button"
+                                        class="btn btn-primary btn-sm open-modal"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal_@seminars.Id">
+                                    Approve
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade open-modal" id="exampleModal_@seminars.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel_@seminars.Id">Approve Seminar</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <input type="hidden" value="@seminars.Id" name="seminarId" class="seminarId" />
+                                                <input type="number" placeholder="Enter Seminar Fees" class="form-control price" name="price" />
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary approveBtn">Approve Now</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        $(".closeRegistration").on('click', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Close Registration!',
+                text: 'Are you sure you want to closing this registration?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Close Registration',
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var seminarId = $(this).data("seminar-id");
+                    // alert(seminarId)
+                    // return;
+
+                    $.ajax({
+                        url: '/Doctor/CloseRegistration',
+                        type: 'POST',
+                        data: {
+                            seminarId: seminarId
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            Swal.fire({
+                                title: 'Close Registration!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay',
+                            }).then(() => {
+                                location.reload();
+                            });
+                        }
+                    })
+                }
+            })
+        })
+
+        $(".openRegistration").on('click', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Open Registration!',
+                text: 'Are you sure you want to open this registration?',
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Open Registration',
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var seminarId = $(this).data("seminar-id");
+                    // alert(seminarId)
+                    // return;
+
+                    $.ajax({
+                        url: '/Doctor/OpenRegistration',
+                        type: 'POST',
+                        data: {
+                            seminarId: seminarId
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            Swal.fire({
+                                title: 'Open Registration!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay',
+                            }).then(() => {
+                                location.reload();
+                            });
+                        }
+                    })
+                }
+            })
+        })
+
+        $(".approveBtn").on('click', function (e) {
+            e.preventDefault();
+            var seminarId = $(this).closest('tr').find('.seminarId').val();
+            // var seminarId = $(".seminarId").val();
+            var price = $(".price").val();
+            // alert(seminarId)
+            // alert(price);
+            // return;
+            if (price == 0) {
+                // toastr.error("Price can not be null");
+                // toastr.clear();
+                Swal.fire({
+                    title: 'Seminar Price!',
+                    text: 'Price can not be null',
+                    icon: 'error',
+                    confirmButtonText: 'Okay',
+                })
+                return;
+            }
+            if (price <= 0) {
+                Swal.fire({
+                    title: 'Seminar Price!',
+                    text: 'Price must be greater than zero',
+                    icon: 'error',
+                    confirmButtonText: 'Okay',
+                })
+                return;
+            }
+
+            $.ajax({
+                url: '/Admin/ApproveSeminar',
+                type: 'POST',
+                data: {
+                    seminarId: seminarId,
+                    price: price
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Seminar Approve!',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'Okay',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Seminar Approve!',
+                            text: response.message,
+                            icon: 'error',
+                            confirmButtonText: 'Okay',
+                        })
+                    }
+
+                }
+            })
+        })
+
+        $(".viewParticipant").on("click", function (e) {
+            var seminarId = $(this).closest("tr").find(".seminarId").val();
+
+            // alert(seminarId);
+
+            $.ajax({
+                url: "/Doctor/ViewParticipants",
+                type: "GET",
+                data: {
+                    seminarId: seminarId,
+                },
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.success) {
+                        $(".participants").empty();
+
+                        if (response.data) {
+                            $.each(response.data, function (key, value) {
+                                console.log(value);
+                                var output =
+                                    `
+                                        <tr>
+                                            <td>${value.userName}</td>
+                                            <td>${value.userEmail}</td>
+                                            <td>${value.userPhone}</td>
+                                            <td>${new Date(value.createdAt).toLocaleString()}</td>
+                                        </tr>
+                                        `
+                                    ;
+                                $(".participants").append(output);
+                            });
+                        } else {
+                            $(".participants").append('<tr><td colspan="4" class="text-center">No Participants Found</td></tr>');
+                        }
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("AJAX Error: " + error);
+                },
+            });
+        });
+
+
+    })
+</script>
+
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                                                                                                                                            });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Done!',
+                    text: '@TempData["success"]',
+                    icon: 'success',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                                                                                                                                                    });
+        </text>
+    }
+                                                                                                                            });
+</script>

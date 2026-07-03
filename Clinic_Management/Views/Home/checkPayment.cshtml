@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Stripe Checkout";
+}
+
+<h2>Stripe Payment</h2>
+<button id="checkout-button">Pay Now</button>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- jQuery CDN -->
+
+<script>
+    var stripe = Stripe("@ViewBag.PublishableKey"); // Apni Publishable Key yahan use karein
+
+    $(document).ready(function () {
+        $("#checkout-button").click(function () {
+            $.ajax({
+                url: "/Home/CreateCheckoutSession",
+                type: "POST",
+                contentType: "application/json",
+                success: function (session) {
+                    if (session.error) {
+                        alert("Payment Error: " + session.error);
+                    } else {
+                        stripe.redirectToCheckout({ sessionId: session.id });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                }
+            });
+        });
+    });
+</script>

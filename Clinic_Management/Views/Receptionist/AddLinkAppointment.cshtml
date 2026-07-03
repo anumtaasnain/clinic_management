@@ -1,0 +1,196 @@
+﻿@model Clinic_Management.Models.Manage_Appointment
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Forms</h5>
+                <form asp-controller="Receptionist" asp-action="AddLinkAppointment" id="appointmentForm" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Patient Name</label>
+                        <select name="PatientId" id="patient_name" class="form-control">
+                            <option selected disabled>Select Patient</option>
+                            @foreach (var patient in Model.Patient)
+                            {
+                                <option value="@patient.Id">@patient.Name</option>
+                            }
+                        </select>
+                        <span id="patientIdError" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Appointments.DoctorName" class="form-label">Doctor Name</label>
+                        <select name="DoctorId" id="doctor_name" class="form-control">
+                            <option selected disabled>Select Doctor</option>
+                            @foreach (var users in Model.Users)
+                            {
+                                <option value="@users.Id">@users.Name</option>
+                            }
+                        </select>
+                        <span id="doctorNameError" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <select name="date" id="date" class="form-control">
+                            <option selected disabled>First Select Doctor</option>
+
+                        </select>
+                        <span id="dateError" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Time</label>
+                        <select name="DateId" id="time" class="form-control">
+                            <option selected disabled>First Select Date</option>
+
+                        </select>
+                        <span id="timeError" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                                                        });
+        </text>
+    }
+                                                        });
+</script>
+<script>
+    $(document).ready(function () {
+        $("#submitBtn").on("click", function (e) {
+            e.preventDefault();
+            let isValid = true;
+
+            $(".error-message").text("");
+
+            if ($("#patient_name").val() === null) {
+                isValid = false;
+                $("#patientIdError").text("Please select a patient.");
+            } else {
+                $("#patientIdError").text("");
+            }
+
+            if ($("#doctor_name").val() === null) {
+                isValid = false;
+                $("#doctorNameError").text("Doctor name is required.");
+            } else {
+                $("#doctorNameError").text("");
+            }
+
+            if ($("#date").val() === null) {
+                isValid = false;
+                $("#dateError").text("Date is required.");
+            } else {
+                $("#dateError").text("");
+            }
+
+            if ($("#time").val() === null) {
+                isValid = false;
+                $("#timeError").text("Start time is required.");
+            } else {
+                $("#timeError").text("");
+            }
+
+
+
+            if (isValid) {
+                $("#appointmentForm").submit();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#doctor_name").on("change", function () {
+            var doctorName = $("#doctor_name").val();
+
+            $("#date").empty();
+
+            $.ajax({
+                url: "/Receptionist/getDate2",
+                type: "GET",
+                data: { doctorId: doctorName },
+                success: function (response) {
+                    console.log(response);
+                    if (response && response.length > 0) {
+                        
+                        $("#date").append('<option selected disabled>Select Date</option>');
+
+                        $.each(response, function (index, value) {
+                            $("#date").append(`<option value="${value}">${value}</option>`);
+                        });
+
+                        $("#date").on("change", function () {
+                            var date = $("#date").val();
+                            var doctor_id = $("#doctor_name").val();
+                            // alert(doctor_id);
+                            $.ajax({
+                                url: "/Receptionist/getTime2",
+                                type: "GET",
+                                data: {
+                                    date: date, doctor_id: doctor_id,
+                                },
+                                success: function (response) {
+                                    console.log(response);
+
+                                    $("#time").empty();
+
+                                    if (response && response.length > 0) {
+
+                                        $.each(response, function (key, value) {
+                                            $("#time").append(
+                                                `<option value="${value.id}">${value.startTime} - ${value.endTime}</option>`
+                                            );
+                                        });
+                                    } else {
+                                        $("#time").append('<option value="">No time slots available</option>');
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire({
+                                        title: "Error",
+                                        text: "Failed to load time slots. Please try again.",
+                                        icon: "error",
+                                        confirmButtonText: "Okay",
+                                    });
+                                }
+
+                            });
+
+                        });
+                    } else {
+                        $("#date").append('<option value="">No dates available</option>');
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Failed to load dates. Please try again.",
+                        icon: "error",
+                        confirmButtonText: "Okay",
+                    });
+                }
+            });
+        });
+    });
+
+</script>

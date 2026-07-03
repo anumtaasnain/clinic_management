@@ -1,0 +1,352 @@
+﻿@model Clinic_Management.Models.Manage_Appointment
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Forms</h5>
+                <form id="addPatientForm" method="post">
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Name" class="form-label">Name</label>
+                        <input asp-for="SinglePatient.Name" class="form-control">
+                        <span asp-validation-for="SinglePatient.Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Email" class="form-label">Email</label>
+                        <input asp-for="SinglePatient.Email" class="form-control">
+                        <span asp-validation-for="SinglePatient.Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Contact" class="form-label">Contact</label>
+                        <input asp-for="SinglePatient.Contact" class="form-control">
+                        <span asp-validation-for="SinglePatient.Contact" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Address" class="form-label">Address</label>
+                        <input asp-for="SinglePatient.Address" class="form-control">
+                        <span asp-validation-for="SinglePatient.Address" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Dob" class="form-label">Date of Birth</label>
+                        <input asp-for="SinglePatient.Dob" class="form-control">
+                        <span asp-validation-for="SinglePatient.Dob" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Gender" class="form-label">Gender</label>
+                        <select asp-for="SinglePatient.Gender" class="form-control" asp-items="Html.GetEnumSelectList<Clinic_Management.Models.Patient._Gender>()">
+                            <option selected disabled>Select Gender</option>
+                        </select>
+                        <span asp-validation-for="SinglePatient.Gender" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="SinglePatient.Medical_History" class="form-label">Medical History</label>
+                        <textarea asp-for="SinglePatient.Medical_History" class="form-control"></textarea>
+                        <span asp-validation-for="SinglePatient.Medical_History" class="text-danger"></span>
+                    </div>
+                    <button type="button" id="submitPatientBtn" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<!-- Modal for Appointment Form -->
+<div id="appointmentModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Appointment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="appointmentForm">
+                    <input type="hidden" id="patientId" name="PatientId" />
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Patient Name</label>
+                        <input type="text" id="patientName" name="patientName" readonly class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Select Doctor</label>
+                        <select name="DoctorName" id="doctorName" class="form-control">
+                            <option selected disabled>Select Doctor</option>
+                            @foreach (var doctors in Model.Users)
+                            {
+                                <option value="@doctors.Id">@doctors.Name</option>
+                            }
+                        </select>
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentDate" class="form-label">Appointment Date</label>
+                        <select name="dateId" id="dateId" class="form-control">
+                            <option selected disabled>First Select Doctor</option>
+
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="appointmentTime" class="form-label">Appointment Time</label>
+                        <select name="time" id="time" class="form-control">
+                            <option selected disabled>First Select Date</option>
+
+                        </select>
+                    </div>
+                    <button type="button" id="addAppointment" class="btn btn-primary">Save Appointment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                    });
+        </text>
+    }
+                                        });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        $("#submitPatientBtn").on("click", function (e) {
+            e.preventDefault();
+
+            var SinglePatient_Name = $("#SinglePatient_Name").val().trim();
+            var SinglePatient_Email = $("#SinglePatient_Email").val().trim();
+            var SinglePatient_Contact = $("#SinglePatient_Contact").val().trim();
+            var SinglePatient_Address = $("#SinglePatient_Address").val().trim();
+            var SinglePatient_Dob = $("#SinglePatient_Dob").val().trim();
+            var SinglePatient_Gender = $("#SinglePatient_Gender").val().trim();
+            var SinglePatient_Medical_History = $("#SinglePatient_Medical_History").val().trim();
+
+            let isValid = true;
+
+            if (!SinglePatient_Name) {
+                isValid = false;
+            }
+
+            if (!SinglePatient_Email) {
+                isValid = false;
+
+            }
+
+            if (!SinglePatient_Contact) {
+                isValid = false;
+
+            }
+
+            if (!SinglePatient_Address) {
+                isValid = false;
+
+            }
+
+            if (!SinglePatient_Dob) {
+                isValid = false;
+
+            }
+
+            if (!SinglePatient_Gender) {
+                isValid = false;
+
+            }
+
+            if (!SinglePatient_Medical_History) {
+                isValid = false;
+
+            }
+
+            if (!isValid) {
+                Swal.fire({
+                    title: 'Validation Error!',
+                    text: 'Please fill all required fields.',
+                    icon: 'error',
+                    confirmButtonText: 'Okay',
+                });
+                return false;
+            }
+
+            const formData = $("#addPatientForm").serialize();
+
+            $.ajax({
+                url: '/Receptionist/AddPatient',
+                method: 'POST',
+                data: formData,
+                success: function (response) {
+                    console.log(response);
+
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Patient Added!',
+                            text: 'Do you want to create an appointment for ' + response.patientName + '?',
+                            icon: 'success',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, create appointment',
+                            cancelButtonText: 'No, go back to patients',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $("#patientId").val(response.patientId);
+                                $("#patientName").val(response.patientName);
+                                $("#appointmentModal").modal('show');
+                            } else {
+                                window.location.href = '/Receptionist/Patient';
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.error || 'Unknown error occurred.',
+                            icon: 'error',
+                            confirmButtonText: 'Okay',
+                        });
+                    }
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $("#doctorName").on("change", function (e) {
+            var doctorName = $("#doctorName").val();
+
+            $.ajax({
+                url: "/Receptionist/getDate",
+                type: "GET",
+                data: {
+                    doctorId: doctorName
+                },
+                success: function (response) {
+                    console.log(response)
+                    $("#dateId").empty();
+                    if (response && response.length > 0) {
+
+                        var output = `<option selected disabled>Select Date</option>`
+                        $.each(response, function (key, value) {
+                            console.log(value);
+                            output += `
+                                                 <option value="${value.id}">${value.date}</option>
+                                    `
+                            $("#dateId").append(output);
+
+                            $("#dateId").on("change", function (e) {
+                                var date = $("#dateId").val();
+
+                                $.ajax({
+                                    url: "/Receptionist/getTime",
+                                    type: "GET",
+                                    data: {
+                                        dateId: date
+                                    },
+                                    success: function (response) {
+                                        $("#time").empty();
+
+                                        if (response && response.length > 0) {
+                                            $.each(response, function (key, value) {
+                                                var output = `<option value="${value.id}">${value.startTime} - ${value.endTime}</option>`;
+                                                $("#time").append(output);
+                                            });
+                                        } else {
+                                            $("#time").append('<option value="">No time slots available</option>');
+                                        }
+                                    },
+                                    error: function () {
+                                        Swal.fire({
+                                            title: "Error",
+                                            text: "Failed to load time slots. Please try again.",
+                                            icon: "error",
+                                            confirmButtonText: "Okay",
+                                        });
+                                    }
+                                });
+                            });
+
+                        })
+                    } else {
+                        $("#time").append('<option value="">No Dates available</option>');
+                    }
+
+                    // $("#date").val(response.);
+                }
+            })
+        })
+        $("#addAppointment").on("click", function (e) {
+            e.preventDefault();
+            var patientName = $("#patientName").val();
+            var doctorName = $("#doctorName").val();
+            var date = $("#dateId").val();
+            var time = $("#time").val();
+
+            let isValid = true;
+
+            if (!patientName) {
+                isValid = false;
+            }
+            if (!doctorName) {
+                isValid = false;
+            }
+            if (!date) {
+                isValid = false;
+            }
+            if (!time) {
+                isValid = false;
+            }
+            if (!isValid) {
+                Swal.fire({
+                    title: 'Validation Error!',
+                    text: 'Please fill all required fields.',
+                    icon: 'error',
+                    confirmButtonText: 'Okay',
+                });
+                return false;
+            }
+            const appointmentData = $("#appointmentForm").serialize();
+            // console.log(appointmentData);
+            // return;
+            $.ajax({
+                url: '/Receptionist/NewAppointment',
+                method: 'POST',
+                data: appointmentData,
+                success: function (response) {
+                    console.log(response)
+                    if (response) {
+                        Swal.fire({
+                            title: 'Appointment Created!',
+                            text: 'The appointment has been successfully created.',
+                            icon: 'success',
+                            confirmButtonText: 'Okay',
+                        }).then(() => {
+                            $("#appointmentModal").modal('hide');
+                            window.location.href = '/Receptionist/Patient';
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: response.error,
+                            icon: 'error',
+                            confirmButtonText: 'Okay',
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'Okay',
+                    });
+                }
+            });
+        });
+    });
+
+</script>

@@ -1,0 +1,92 @@
+﻿@model List<OrdersManage>
+<style>
+    .total-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+    }
+
+    .total-label {
+        margin: 0;
+    }
+
+    .total-value {
+        font-weight: bold;
+    }
+</style>
+
+<div class="shadow-sm bg-warning border-top py-3 mb-4">
+    <div class="container">
+        <a href="" style="color:white;font-size:20px;margin-right:30px;"> Home / </a>
+        <a href="" style="color:white;font-size:20px;"> My Orders / </a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Order View Details</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="">Name:</label>
+                            <div class="border p-2">@accessor.HttpContext.Session.GetString("name")</div>
+                            <label for="">Email:</label>
+                            <div class="border p-2">@accessor.HttpContext.Session.GetString("email")</div>
+                            <label for="">Phone:</label>
+                            <div class="border p-2">@accessor.HttpContext.Session.GetString("phone")</div>
+                            <label for="">Address:</label>
+                            <div class="border p-2">@accessor.HttpContext.Session.GetString("address")</div>
+                            
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th> Name </th>
+                                        <th> Quantity </th>
+                                        <th> Price </th>
+                                        <th> Image </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var orderItems in Model)
+                                    {
+                                        string folder;
+                                        if (orderItems.ProductType == "Medicine")
+                                        {
+                                            folder = "MedicineImages";
+                                        }
+                                        else
+                                        {
+                                            folder = "MachinesImages";
+                                        }
+                                        <tr>
+                                            <td>@orderItems.ProductName</td>
+                                            <td>@orderItems.Quantity</td>
+                                            <td>@orderItems.Price</td>
+                                            <td>
+                                                <img src="~/@folder/@orderItems.Image"
+                                                     height="80px" width="100px;" class="image_set" alt="Image">
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+
+                            </table>
+                            <hr>
+                            <div class="total-container">
+                                <h2 class="total-label">Grand Total: @ViewBag.total</h2>
+                                <h2 class="total-value"></h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

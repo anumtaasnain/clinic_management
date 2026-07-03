@@ -1,0 +1,110 @@
+﻿@model Clinic_Management.Models.MedicineBatchViewModel
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Add Medicine Here</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-controller="Pharmacist" asp-action="EditMedicine" method="post" enctype="multipart/form-data">
+                            <input type="hidden" value="@Model.Medicine.Id" asp-for="Medicine.Id" />
+                            <input type="hidden" value="@Model.Batch.Id" asp-for="Batch.Id" />
+                            <input type="hidden" value="@Model.Medicine.Id" name="medicineId" />
+                            <div class="mb-3">
+                                <label asp-for="Medicine.MedicineName" class="form-label">Medicine Name</label>
+                                <input asp-for="Medicine.MedicineName" value="@Model.Medicine.MedicineName" class="form-control">
+                                <span asp-validation-for="Medicine.MedicineName" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Medicine.MedicineCode" class="form-label">Medicine Code</label>
+                                <input asp-for="Medicine.MedicineCode" value="@Model.Medicine.MedicineCode" class="form-control">
+                                <span asp-validation-for="Medicine.MedicineCode" class="text-danger"></span>
+
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Medicine.UnitPrice" class="form-label">Unit Price</label>
+                                <input asp-for="Medicine.UnitPrice" value="@Model.Medicine.UnitPrice" class="form-control">
+                                <span asp-validation-for="Medicine.UnitPrice" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Medicine.Manufacturer" class="form-label">Manufacturer</label>
+                                <input asp-for="Medicine.Manufacturer" value="@Model.Medicine.Manufacturer" class="form-control">
+                                <span asp-validation-for="Medicine.Manufacturer" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Medicine.ManufacturerEmail" class="form-label">Manufacturer Email</label>
+                                <input asp-for="Medicine.ManufacturerEmail" value="@Model.Medicine.ManufacturerEmail" class="form-control">
+                                <span asp-validation-for="Medicine.ManufacturerEmail" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Medicine.ReorderLevel" class="form-label">Reorder Level</label>
+                                <input asp-for="Medicine.ReorderLevel" value="@Model.Medicine.ReorderLevel" class="form-control">
+                                <span asp-validation-for="Medicine.ReorderLevel" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Medicine.CategoryId" class="form-label">Medicine Category</label>
+                                <select asp-for="Medicine.CategoryId" class="form-control">
+                                    <option selected disabled>Select Category</option>
+                                    @foreach (var categories in ViewBag.categories)
+                                    {
+                                        <option selected="@(categories.Id == Model.Medicine.CategoryId ? "selected" : null)" value="@categories.Id">@categories.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Medicine.CategoryId" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Batch.BatchNumber" class="form-label">Medicine Batch Number</label>
+                                <input asp-for="Batch.BatchNumber" value="@Model.Batch.BatchNumber" class="form-control">
+                                <span asp-validation-for="Batch.BatchNumber" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Batch.StockQuantity" class="form-label">Medicine Stock Quatity</label>
+                                <input asp-for="Batch.StockQuantity" value="@Model.Batch.StockQuantity" class="form-control">
+                                <span asp-validation-for="Batch.StockQuantity" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Batch.ManufacturingDate" class="form-label">Medicine Manufacturing Date</label>
+                                <input asp-for="Batch.ManufacturingDate" value="@Model.Batch.ManufacturingDate.ToString("yyyy-MM-dd")" class="form-control">
+                                <span asp-validation-for="Batch.ManufacturingDate" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Batch.ExpiryDate" class="form-label">Medicine Expiry Date</label>
+                                <input asp-for="Batch.ExpiryDate" value="@Model.Batch.ExpiryDate.ToString("yyyy-MM-dd")" class="form-control">
+                                <span asp-validation-for="Batch.ExpiryDate" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Medicine Image</label>
+                                <input type="file" name="Image" onchange="document.querySelector('#old_image').src=window.URL.createObjectURL(this.files[0])" class="form-control">
+                                <img class="mt-3" id="old_image" height="150px" src="~/MedicineImages/@Model.Medicine.Image" alt="">
+                                <span asp-validation-for="Medicine.Image" class="text-danger"></span>
+                            </div>
+                            <input type="hidden" value="@Model.Medicine.Image" name="oldImage"/>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                });
+        </text>
+    }
+                            });
+</script>

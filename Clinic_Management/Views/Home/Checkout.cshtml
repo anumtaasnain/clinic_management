@@ -1,0 +1,296 @@
+﻿@model List<Clinic_Management.Models.Cart>
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<section id="center" class="centre_o pt-5 pb-5">
+    <div class="container-xl">
+        <div class="row centre_o1">
+            <h1 class="mb-0 text-white">
+                Checkout
+                <span class="pull-right fs-6 fw-normal d-inline-block mt-3 col_light text-uppercase">
+                    <a class="text-white" href="#">HOME</a>
+                    <span class="mx-1 text-white-50">/</span> Checkout
+                </span>
+            </h1>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+      integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+        integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous">
+</script>
+
+<body>
+    <style>
+        .checkout-form label {
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .checkout-form input {
+            font-size: 12px;
+            font-weight: 400;
+            padding: 5px;
+        }
+    </style>
+    <div class="container mt-4 my-4">
+
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Basic Details</h5>
+                        <hr>
+                        <div class="row checkout-form">
+                            <div class="col-md-6">
+                                <label for="name">Name</label>
+                                <input type="text" placeorder="Enter First Name" value="@accessor.HttpContext.Session.GetString("name")"
+                                       name="name" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="name">Name</label>
+                                <input type="text" placeorder="Enter First Name" value="@accessor.HttpContext.Session.GetString("email")"
+                                       name="email" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6  mt-3">
+                                <label for="name">Address 2</label>
+                                <input type="text" placeorder="Enter Address2" value="@accessor.HttpContext.Session.GetString("address")"
+                                       name="address" required class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6  mt-3">
+                                <label for="name">Phone</label>
+                                <input type="number" value="@accessor.HttpContext.Session.GetString("phone")" readonly
+                                       placeorder="Enter Address2" name="phone" required
+                                       class="form-control">
+                            </div>
+                            @if (Model != null && Model.Any())
+                            {
+                                <div class="col-md-12  mt-3">
+                                    <label for="name">Payment Method</label>
+                                    <select name="" id="method" class="form-control" required>
+                                        <option selected>Online</option>
+                                    </select>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>Orders Details</h4>
+                        <hr>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th> Id </th>
+                                    <th> Name </th>
+                                    <th> Quantity </th>
+                                    <th> Price </th>
+                                    <th> Type </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    decimal grandTotal = 0;
+                                }
+
+                                @foreach (var item in Model)
+                                {
+                                    var itemTotal = item.Medicine.UnitPrice * item.Quantity;
+                                    grandTotal += (int)itemTotal;
+                                    <tr>
+                                        <td>@item.Medicine.Id</td>
+                                        <td>@item.Medicine.MedicineName</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@(item.Medicine.UnitPrice * @item.Quantity)</td>
+                                        <td>@item.ProductType</td>
+                                    </tr>
+                                }
+                                @foreach (var item in ViewBag.cart2)
+                                {
+                                    var itemTotal = item.MedicalInstrument.UnitPrice * item.Quantity;
+                                    grandTotal += (int)itemTotal;
+                                    <tr>
+                                        <td>@item.MedicalInstrument.Id</td>
+                                        <td>@item.MedicalInstrument.Name</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@(item.MedicalInstrument.UnitPrice * @item.Quantity)</td>
+                                        <td>@item.ProductType</td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td><b><i>Total Price: @grandTotal</i></b></td>
+                                </tr>
+                            </tbody>
+
+
+                        </table>
+                        <hr>
+                        @if (Model != null && Model.Any() || ViewBag.cart2 != null)
+                        {
+
+                            <button type="button" class="btn btn-success float-right" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal" id="order_btn">
+                                Place Order
+                            </button>
+
+
+
+                            <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content bg-dark text-light">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="cancelModalLabel">
+                                                Order Payment
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+
+
+                                        <div class="container mt-5">
+                                            <h1 class="text-center">Stripe Payment</h1>
+                                            <form id="payment-form" class="mt-4">
+                                                <input type="hidden" id="name" name="name"
+                                                       value="@accessor.HttpContext.Session.GetString("name")">
+                                                <input type="hidden" id="email" name="email"
+                                                       value="@accessor.HttpContext.Session.GetString("email")">
+                                                <input type="hidden" id="address" name="address"
+                                                       value="@accessor.HttpContext.Session.GetString("address")">
+                                                <input type="hidden" id="phone" name="phone"
+                                                       value="@accessor.HttpContext.Session.GetString("phone")">
+                                                <input type="hidden" id="price" name="price"
+                                                       value="@grandTotal">
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <label for="card-number">Card Number</label>
+                                                        <div id="card-number" class="form-control"
+                                                             style="padding: 10px;">
+                                                        </div>
+                                                        <div id="card-errors" role="alert" class="text-danger">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-row">
+                                                        <div class="form-group">
+                                                            <label for="expiry">Expiry Date (MM/YY)</label>
+                                                            <div id="expiry" class="form-control"
+                                                                 style="padding: 10px;"></div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="cvv">CVV</label>
+                                                            <div id="cvv" class="form-control"
+                                                                 style="padding: 10px;"></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="zip">ZIP Code</label>
+                                                        <input type="text" id="zip" class="form-control"
+                                                               placeholder="ZIP Code" required>
+                                                    </div>
+
+                                                    <div id="payment-response" class="mt-3"></div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">
+                                                        Close
+                                                    </button>
+                                                    <button type="submit" class="btn btn-danger">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                        else
+                        {
+                            <button type="button" title="Your Cart is empty" style="cursor: not-allowed"
+                                    class="btn btn-success float-right">
+                                Place Order
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    $(document).ready(function () {
+        const stripe = Stripe('pk_test_51QC2ODIe4idSW70t3KGivHvvWGDachFhshcM3FC3kUOGiog9iupBTWRzeSR622duJ94Vzpuk034kvUAHK9OdviY100JX1FOvsF');
+        const elements = stripe.elements();
+
+        const cardNumberElement = elements.create('cardNumber');
+        cardNumberElement.mount('#card-number');
+
+        const cardExpiryElement = elements.create('cardExpiry');
+        cardExpiryElement.mount('#expiry');
+
+        const cardCvcElement = elements.create('cardCvc');
+        cardCvcElement.mount('#cvv');
+
+        $('#payment-form').on('submit', function (event) {
+            event.preventDefault();
+
+            stripe.createPaymentMethod({
+                type: 'card',
+                card: cardNumberElement,
+                billing_details: {
+                    address: { postal_code: $('#zip').val() }
+                }
+            }).then(function (result) {
+                if (result.error) {
+                    $('#card-errors').text(result.error.message);
+                } else {
+                    $.ajax({
+                        url: '/Home/PlaceOrder',
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        data: JSON.stringify({
+                            StripeToken: result.paymentMethod.id,
+                            amount: $('#price').val(),
+                            name: $("#name").val(),
+                            email: $("#email").val(),
+                            address: $("#address").val(),
+                            phone: $("#phone").val(),
+                            method: $("#method").val()
+                        }),
+                        success: function (response) {
+
+                            Swal.fire({
+                                title: 'Order Status!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay',
+                            }).then(() => {
+                                window.location.href = '/Home/ShowOrders';
+                            });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            $('#payment-response').text('An error occurred: ' + errorThrown);
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+</script>

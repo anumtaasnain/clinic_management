@@ -1,0 +1,61 @@
+﻿@model Clinic_Management.Models.DoctorTimeSlot
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Add Slots Here</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-controller="Doctor" asp-action="AddSlots" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" name="StartDate" class="form-control">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" name="EndDate" class="form-control">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" name="StartTime" class="form-control">
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">End Time</label>
+                                <input type="time" name="EndTime" class="form-control">
+                                <span class="text-danger"></span>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                                    });
+        </text>
+    }
+                            });
+</script>
+
+

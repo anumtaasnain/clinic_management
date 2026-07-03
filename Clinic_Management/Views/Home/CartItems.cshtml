@@ -1,0 +1,215 @@
+﻿@model List<Clinic_Management.Models.Cart>
+
+<section id="center" class="centre_o pt-5 pb-5">
+    <div class="container-xl">
+        <div class="row centre_o1">
+            <h1 class="mb-0 text-white">
+                Shopping Cart
+                <span class="pull-right fs-6 fw-normal d-inline-block mt-3 col_light text-uppercase">
+                    <a class="text-white" href="/">HOME</a>
+                    <span class="mx-1 text-white-50">/</span> Shopping Cart
+                </span>
+            </h1>
+        </div>
+    </div>
+</section>
+
+@if (Model.Any() || ViewBag.cart2 != null)
+{
+    <table class="table container">
+        <thead>
+            <tr>
+                <th>MEDICINE IMAGE</th>
+                <th>MEDICINE NAME</th>
+                <th>UPDATE QUANTITY</th>
+                <th>PRICE</th>
+                <th>TOTAL PRICE</th>
+                <th>REMOVE</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                decimal grandTotal = 0;
+            }
+
+            @foreach (var item in Model)
+            {
+                var totalPrice = item.Quantity * item.Medicine.UnitPrice;
+                grandTotal += (int)totalPrice;
+
+                <tr>
+                    <td>
+                        <img src="~/MedicineImages/@item.Medicine.Image" alt="Medicine Image" height="60px" width="60px">
+                    </td>
+                    <td>@item.Medicine.MedicineName (@item.ProductType)</td>
+                    <td>
+                        <input type="number" min="1" data-cart-id="@item.Id"
+                               data-available-quantity="@item.Medicine.Batches.Select(x => x.StockQuantity).FirstOrDefault()"
+                               class="quantity-input form-control totalQuantity"
+                               value="@item.Quantity">
+                        <input type="hidden" class="ProductType" name="ProductType" value="@item.ProductType" />
+
+                    </td>
+                    <td class="tablePrice">@item.Medicine.UnitPrice</td>
+                    <td class="tableTotalprice">@totalPrice</td>
+                    <td>
+                        <button data-cart-id="@item.Id" class="btn button_2 delete-cart-item">
+                            <i class="fa fa-trash"></i> Remove
+                        </button>
+                    </td>
+                </tr>
+            }
+            @foreach (var item in ViewBag.cart2)
+            {
+                var totalPrice = item.Quantity * item.MedicalInstrument.UnitPrice;
+                grandTotal += (int)totalPrice;
+
+                <tr>
+                    <td>
+                        <img src="~/MachinesImages/@item.MedicalInstrument.Image" alt="Medicine Image" height="60px" width="60px">
+                    </td>
+                    <td>@item.MedicalInstrument.Name (@item.ProductType)</td>
+                    <td>
+                        <input type="number" min="1" data-cart-id="@item.Id"
+                               data-available-quantity="@item.MedicalInstrument.StockQuantity"
+                               class="quantity-input form-control totalQuantity2"
+                               value="@item.Quantity">
+                        <input type="hidden" class="ProductType" name="ProductType" value="@item.ProductType" />
+
+                    </td>
+                    <td class="tablePrice2">@item.MedicalInstrument.UnitPrice</td>
+                    <td class="tableTotalprice2">@totalPrice</td>
+                    <td>
+                        <button data-cart-id="@item.Id" class="btn button_2 delete-cart-item">
+                            <i class="fa fa-trash"></i> Remove
+                        </button>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="6"><h1>Total Price: <span id="total">@grandTotal</span></h1></td>
+                <input type="hidden" value="@grandTotal" id="grandTotal" />
+            </tr>
+        </tbody>
+    </table>
+    <div class="container mt-5" style="margin-bottom:30px;">
+        <a asp-controller="Home" asp-action="Checkout" class="btn btn-primary" style="float:right; margin-bottom: 48px;">Proceed To Checkout</a>
+    </div>
+    <div style="margin-bottom:50px;"></div>
+    <div style="margin-bottom:100px;"></div>
+
+}
+else
+{
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-4">
+                <a href="@Url.Action("Index", "Products")" class="btn button_2 float-end">Continue Shopping</a>
+            </div>
+            <div class="col-4 card-body text-center">
+                <h2>Your <i class="fa fa-shopping-cart"></i> Cart is Empty</h2>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+
+    $('input.quantity-input').change(function (e) {
+        e.preventDefault();
+        var $row = $(this).closest('tr');
+        var quantity = $(this).val();
+        var cartId = $(this).data('cart-id');
+        var availableQuantity = $(this).data('available-quantity');
+        var productType = $row.find('.ProductType').val();
+
+        if (quantity > availableQuantity) {
+            Swal.fire({
+                title: "Quantity Alert!",
+                text: 'Quantity exceeds available stock. Maximum allowed quantity is ' + availableQuantity,
+                icon: 'warning',
+                confirmButtonText: 'Okay',
+            });
+            $(this).val(availableQuantity);
+            quantity = availableQuantity;
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Home/QuantityUpdate",
+            data: {
+                cartId: cartId,
+                quantity: quantity,
+                productType: productType
+            },
+            dataType: "json",
+                success: function (response) {
+        if (response.success) {
+            var unitprice, totalPrice;
+
+            if ($row.find('.tablePrice').length) {
+                unitprice = parseFloat($row.find('.tablePrice').text());
+                totalPrice = unitprice * quantity;
+                $row.find('.tableTotalprice').text(totalPrice);
+            } else if ($row.find('.tablePrice2').length) {
+                unitprice = parseFloat($row.find('.tablePrice2').text());
+                totalPrice = unitprice * quantity;
+                $row.find('.tableTotalprice2').text(totalPrice);
+            }
+
+            var grandTotal = 0;
+            $('.tableTotalprice, .tableTotalprice2').each(function () {
+                grandTotal += parseFloat($(this).text());
+            });
+
+            $("#total").text(grandTotal);
+            $("#grandTotal").val(grandTotal);
+
+            toastr.clear();
+            toastr.success(response.message);
+        } else {
+            toastr.clear();
+            toastr.error(response.message);
+        }
+    },
+            error: function (response) {
+                console.error('Error:', response);
+                toastr.error(response.responseJSON.message);
+            }
+        });
+    });
+
+
+        $(".delete-cart-item").on("click", function (e) {
+            e.preventDefault();
+
+            Swal.fire({
+                title: "Remove Item!",
+                text: "Are you sure you want to remove this item?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "Yes, Remove Item",
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var cartId = $(this).data("cart-id");
+                    $.ajax({
+                        url: '/Home/RemoveCart',
+                        type: 'POST',
+                        data: { cartId: cartId },
+                        success: function (response) {
+                            toastr.success(response.message)
+                            setTimeout(function () {
+                                window.location.reload();
+                            }, 1500);
+                        }
+                    });
+                }
+            });
+        })
+    })
+
+</script>

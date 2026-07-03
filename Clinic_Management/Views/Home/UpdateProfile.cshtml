@@ -1,0 +1,160 @@
+﻿@model Clinic_Management.Models.User
+<style>
+    span {
+        color: red;
+        float: left;
+    }
+</style>
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-5">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Profile</h1>
+            <a href="" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="" class="h4 text-white">Profile</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+<!-- Appointment Start -->
+<div class="container-fluid bg-primary bg-appointment mb-5 wow fadeInUp" data-wow-delay="0.1s" style="margin-top: 90px;">
+    <div class="container">
+        <div class="row gx-5">
+            @* <div class="col-lg-6 py-5"> *@
+            @*     <div class="py-5"> *@
+            @*         <h1 class="display-5 text-white mb-4">@Model.Seminar.Title</h1> *@
+            @*         <p class="text-white mb-0">@Model.Seminar.Description</p> *@
+            @*     </div> *@
+            @* </div> *@
+            <div class="col-lg-12">
+                <div class="appointment-form h-100 d-flex flex-column justify-content-center text-center p-5 wow zoomIn" data-wow-delay="0.6s">
+                    <h1 class="text-white mb-4">Your Profile</h1>
+                    <form asp-controller="Home" asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" value="@accessor.HttpContext.Session.GetString("id")" />
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-12">
+                                <input type="text" asp-for="Name" value="@accessor.HttpContext.Session.GetString("name")" class="form-control bg-light border-0" placeholder="Your Name" style="height: 55px;">
+                                <span asp-validation-for="Name"></span>
+                            </div>
+                            <div class="col-12 col-sm-12">
+                                <input type="email" asp-for="Email" value="@accessor.HttpContext.Session.GetString("email")" class="emailField form-control bg-light border-0" placeholder="Your Email" style="height: 55px;">
+                                <span class="email_validation text-danger"></span>
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            @{
+                                if (accessor.HttpContext.Session.GetString("role") != "2")
+                                {
+
+                                    <div class="col-12 col-sm-12">
+                                        <input type="number" asp-for="Phone" value="@accessor.HttpContext.Session.GetString("phone")" class="form-control bg-light border-0" placeholder="Your Phone" style="height: 55px;">
+                                        <span asp-validation-for="Phone"></span>
+                                    </div>
+                                    <div class="col-12 col-sm-12">
+                                        <input type="text" asp-for="Address" value="@accessor.HttpContext.Session.GetString("address")" class="form-control bg-light border-0" placeholder="Your Address" style="height: 55px;">
+                                        <span asp-validation-for="Address"></span>
+                                    </div>
+                                }
+                            }
+
+
+                            @{
+                                if (accessor.HttpContext.Session.GetString("role") == "3")
+                                {
+                                    <div class="col-12 col-sm-12">
+                                        @{
+                                            var userGender = accessor.HttpContext.Session.GetString("gender");
+                                        }
+                                        <select class="form-select" asp-for="Gender">
+                                            <option value="Male" selected="@(userGender == "Male" ? "selected" : null)">Male</option>
+                                            <option value="Female" selected="@(userGender == "Female" ? "selected" : null)">Female</option>
+                                        </select>
+                                        <span asp-validation-for="Gender"></span>
+
+                                    </div>
+                                    <div class="col-12 col-sm-12">
+                                        <input type="text" asp-for="MedicalHistory" value="@accessor.HttpContext.Session.GetString("medicalhistory")" class="form-control bg-light border-0" placeholder="Your Medical History" style="height: 55px;">
+                                        <span asp-validation-for="MedicalHistory"></span>
+                                    </div>
+                                }
+                            }
+                            <div class="col-12 col-sm-12">
+                                <input type="password" asp-for="Password" class="form-control bg-light border-0" placeholder="Your Password (Leave Empty If No Change)" style="height: 55px;">
+                                <span asp-validation-for="Password"></span>
+                            </div>
+                            <div class="col-12 col-sm-12">
+                                <input type="file" asp-for="Image" onchange="document.querySelector('#old_image').src=window.URL.createObjectURL(this.files[0])" class="form-control bg-light border-0" style="height: 55px;">
+                                <img height="125px" id="old_image" style="float:left;" src="~/UserImages/@accessor.HttpContext.Session.GetString("image")" />
+                                <span asp-validation-for="Image"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="submit" id="checkout-button" class="btn btn-dark w-100 py-3">
+                                    Update
+                                </button>
+                            </div>
+
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Appointment End -->
+
+<script src="https://js.stripe.com/v3/"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        $(document).ready(function () {
+            
+            $(".emailField").on('blur', function (e) {
+                var email = $(this).val();
+
+                $.ajax({
+                    url: "/User/checkEmail",
+                    type: "GET",
+                    data: { email: email },
+                    success: function (response) {
+                        if (response !== "") {
+                            $(".email_validation").text(response);
+                        } else {
+                            $(".email_validation").text("");
+                        }
+                    }
+                });
+            });
+        });
+
+
+
+</script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                                    Swal.fire({
+                                        title: 'Error!',
+                                    text: '@TempData["error"]',
+                                    icon: 'error',
+                                    confirmButtonText: 'Okay'
+                                                                });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                                            Swal.fire({
+                                                title: 'Success!',
+                                            text: '@TempData["success"]',
+                                            icon: 'success',
+                                            confirmButtonText: 'Okay'
+                                                                        });
+        </text>
+    }
+    })
+
+        
+</script>

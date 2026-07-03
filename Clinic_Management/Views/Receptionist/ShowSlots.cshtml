@@ -1,0 +1,190 @@
+﻿@model Clinic_Management.Models.Manage_Appointment
+
+<h2>Medicine Stock Report</h2>
+<h2>Medicine Stock Report</h2>
+<h2 class="text-center">Doctor Slots</h2>
+@* <a asp-controller="Doctor" asp-action="addSlots" class="btn btn-primary">Add Slot</a> *@
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Status</th>
+            @* <th>Action</th> *@
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slots in Model.TimeSlot)
+        {
+
+            <tr>
+                <td>@slots.Id</td>
+                <td>@slots.Doctor.Name</td>
+                <td>@slots.Date</td>
+                <td>@slots.StartTime</td>
+                <td>@slots.EndTime</td>
+                <td>@slots.Status</td>
+                @{
+                    if (slots.Status == 0)
+                    {
+
+                        // <td><button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal_@slots.Id" class="btn btn-primary btn-sm">Add Appointment</button></td>
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal_@slots.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel_@slots.Id">Appointment Form</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form id="appointmentForm" asp-controller="Receptionist" asp-action="AddAppointment" method="post">
+                                        <input type="hidden" value="@slots.Id" name="Appointments.DateId" />
+                                        <input type="hidden" value="@slots.Doctor.Id" name="Appointments.DoctorId" />
+
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Patient</label>
+                                                <select name="Appointments.PatientId" id="patientId" class="form-control">
+                                                    <option value="" selected disabled>Select Patient</option>
+                                                    @foreach (var patients in Model.Patient)
+                                                    {
+                                                        <option value="@patients.Id">@patients.Name (@patients.Contact)</option>
+                                                    }
+                                                </select>
+                                                <span class="text-danger error-message" id="patientIdError"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Doctor Name</label>
+                                                <input name="Appointments.DoctorName" id="doctorName" value="Doctor @slots.Doctor.Name" readonly class="form-control" />
+                                                <span class="text-danger error-message" id="doctorNameError"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Date</label>
+                                                <input name="Appointments.Date" id="date" value="@slots.Date" readonly class="form-control" />
+                                                <span class="text-danger error-message" id="dateError"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Time</label>
+                                                <input name="Appointments.StartTime" id="startTime" value="@slots.StartTime" readonly class="form-control" />
+                                                <span class="text-danger error-message" id="startTimeError"></span>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">End Time</label>
+                                                <input name="Appointments.EndTime" id="endTime" value="@slots.EndTime" readonly class="form-control" />
+                                                <span class="text-danger error-message" id="endTimeError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" id="submitBtn" class="btn btn-primary">Confirm</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        // <td><button type="button" data-bs-toggle="modal" data-bs-target="#viewAppointmentModal_@slots.Id" class="btn btn-info btn-sm">View Appointment</button></td>
+
+                        <!-- View Appointment Modal -->
+                        <div class="modal fade" id="viewAppointmentModal_@slots.Id" tabindex="-1" aria-labelledby="viewAppointmentLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="viewAppointmentLabel">Appointment Details</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p><strong>Doctor Name:</strong> @slots.Doctor.Name</p>
+                                        <p><strong>Date:</strong> @slots.Date</p>
+                                        <p><strong>Start Time:</strong> @slots.StartTime</p>
+                                        <p><strong>End Time:</strong> @slots.EndTime</p>
+                                        <p><strong>Status:</strong> Booked</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#submitBtn").on("click", function (e) {
+            e.preventDefault();
+            let isValid = true;
+
+            $(".error-message").text("");
+
+            if ($("#patientId").val() === null) {
+                isValid = false;
+                $("#patientIdError").text("Please select a patient.");
+            }
+
+            if ($("#doctorName").val().trim() === "") {
+                isValid = false;
+                $("#doctorNameError").text("Doctor name is required.");
+            }
+
+            if ($("#date").val().trim() === "") {
+                isValid = false;
+                $("#dateError").text("Date is required.");
+            }
+
+            if ($("#startTime").val().trim() === "") {
+                isValid = false;
+                $("#startTimeError").text("Start time is required.");
+            }
+
+            if ($("#endTime").val().trim() === "") {
+                isValid = false;
+                $("#endTimeError").text("End time is required.");
+            }
+
+            if (isValid) {
+                $("#appointmentForm").submit();
+            }
+        });
+    });
+</script>
+
+
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                    });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                            Swal.fire({
+                                title: 'Success!',
+                            text: '@TempData["success"]',
+                            icon: 'success',
+                            confirmButtonText: 'Okay'
+                                                        });
+        </text>
+    }
+                        });
+</script>

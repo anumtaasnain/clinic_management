@@ -1,0 +1,78 @@
+﻿@model Seminar
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Forms</h5>
+                <div class="card">
+                    <div class="card-body">
+                        <form asp-controller="Doctor" asp-action="EditSeminar" method="post" enctype="multipart/form-data">
+
+
+                            <input type="hidden" asp-for="@Model.Id" value="@Model.Id" />
+                            <div class="time-slot mt-3">
+                                <div class="mb-3">
+                                    <label asp-for="@Model.Title" class="form-label">Start Time</label>
+                                    <input asp-for="@Model.Title" value="@Model.Title" class="form-control">
+                                    <span asp-validation-for="@Model.Title" class="text-danger"></span>
+                                </div>
+                                <div>
+                                    <label asp-for="@Model.Description" class="form-label">Start Time</label>
+                                    <input asp-for="@Model.Description" value="@Model.Description" class="form-control">
+                                    <span asp-validation-for="@Model.Description" class="text-danger"></span>
+                                </div>
+                                <div>
+                                    <label asp-for="@Model.DateTime" class="form-label">Start Time</label>
+                                    <input asp-for="@Model.DateTime" value="@Model.DateTime.ToString("yyyy-MM-dd")" class="form-control">
+                                    <span asp-validation-for="@Model.DateTime" class="text-danger"></span>
+                                </div>
+                                <div>
+                                    <label class="form-label">Image</label>
+                                    <input type="file" name="Image" onchange="document.querySelector('#old_image').src=window.URL.createObjectURL(this.files[0])" class="form-control">
+                                    <img height="100px" id="old_image" src="~/SeminarImages/@Model.Image" />
+                                </div>
+
+                            </div>
+             
+                            <button type="submit" class="btn btn-success btn-sm mt-4">Edit Seminar</button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                    });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Done!',
+                    text: '@TempData["success"]',
+                    icon: 'success',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                            });
+        </text>
+    }
+                                                                });
+</script>

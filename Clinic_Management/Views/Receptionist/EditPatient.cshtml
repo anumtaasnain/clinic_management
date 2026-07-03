@@ -1,0 +1,54 @@
+﻿@model Clinic_Management.Models.Patient
+
+<div class="container-fluid">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title fw-semibold mb-4">Forms</h5>
+                <form asp-controller="Receptionist" asp-action="EditPatient" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Name</label>
+                        <input asp-for="Name" value="@Model.Name" class="form-control">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" value="@Model.Email" class="form-control">
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Contact" class="form-label">Contact</label>
+                        <input asp-for="Contact" value="@Model.Contact" class="form-control">
+                        <span asp-validation-for="Contact" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Address</label>
+                        <input asp-for="Address" value="@Model.Address" class="form-control">
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Dob" class="form-label">Date of Birth</label>
+                        <input asp-for="Dob" value="@Model.Dob.ToString("yyyy-MM-dd")" class="form-control">
+
+                        <span asp-validation-for="Dob" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Gender" class="form-label">Gender</label>
+                        <select asp-for="Gender" value="@Model.Gender" class="form-control" asp-items="Html.GetEnumSelectList<Clinic_Management.Models.Patient._Gender>()">
+                            <option selected disabled>Select Gender</option>
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Medical_History" class="form-label">Medical History</label>
+                        <textarea asp-for="Medical_History" value="@Model.Medical_History" class="form-control"></textarea>
+                        <span asp-validation-for="Medical_History" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>

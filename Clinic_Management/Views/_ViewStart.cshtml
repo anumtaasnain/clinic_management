@@ -1,0 +1,17 @@
+﻿@{
+    var role = accessor.HttpContext.Session.GetString("role");
+    var currentPath = accessor.HttpContext.Request.Path.Value;
+
+    if (role == "0" || string.IsNullOrEmpty(role))
+    {
+        Layout = "_Layout";
+    }
+    else if (currentPath.StartsWith("/Admin") || currentPath.StartsWith("/Receptionist") || currentPath.StartsWith("/Doctor") || currentPath.StartsWith("/Pharmacist"))
+    {
+        Layout = "_Layout2";
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
+}

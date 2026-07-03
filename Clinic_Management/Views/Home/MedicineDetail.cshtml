@@ -1,0 +1,504 @@
+﻿@model Clinic_Management.Models.MedicineViewModel
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
+      integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ=="
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+    .cartdiv {
+        margin-top: 50px !important;
+    }
+
+    .reviewcontainer {
+        margin-top: 50px !important;
+        /* margin-left: 50px !important; */
+    }
+
+    .review {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .rating .fa-star {
+        color: #FFD700;
+    }
+
+    .checked {
+        color: #FFD700;
+    }
+
+    .review-body {
+        margin-top: 10px;
+        font-style: italic;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .average-rating {
+        margin-top: 50px;
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .average-rating .fa-star {
+            font-size: 24px;
+            color: #FFD700;
+        }
+
+    textarea.form-control {
+        resize: none;
+    }
+
+    .submit-review {
+        margin-top: 20px;
+    }
+
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #ff5c5c;
+        font-size: 16px;
+        cursor: pointer;
+        margin-left: 10px;
+        transition: color 0.3s ease;
+    }
+
+        .delete-btn:hover {
+            color: #ff1a1a;
+        }
+
+    .delete-review-form {
+        display: inline;
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .rating {
+        display: flex;
+        align-items: center;
+    }
+
+        .rating .fa-star {
+            color: #FFD700;
+            /* Gold color for stars */
+            margin-right: 2px;
+            /* Space between stars */
+        }
+
+    .delete-btn {
+        background: none;
+        border: none;
+        color: #ff5c5c;
+        font-size: 16px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+        .delete-btn:hover {
+            color: #ff1a1a;
+        }
+</style>
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-5">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Pricing</h1>
+            <a href="" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="" class="h4 text-white">Pricing</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+<!-- Pricing Start -->
+<div class="container-fluid py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <div class="section-title mb-4">
+                    <h5 class="position-relative d-inline-block text-primary text-uppercase">Pricing Plan</h5>
+                    <h1 class="display-5 mb-0">We Offer Fair Prices for Medicines</h1>
+                </div>
+                <p class="mb-4" style="text-align:justify;">
+                    Our store offers a wide range of high-quality medicines and medical instruments to meet your healthcare needs. Whether you need essential medicines for treatment or advanced medical instruments for accurate diagnosis, we ensure the best quality at affordable prices.
+                </p>
+                <h5 class="text-uppercase text-primary wow fadeInUp" data-wow-delay="0.3s">Quantity</h5>
+                <h1 class="wow fadeInUp" data-wow-delay="0.6s">In Stock @Model.StockQuantity</h1>
+                <h2 style="margin-top:12px;"></h2>
+                <div>
+                    <span style="font-weight:bold;font-size:15px;">Rating :</span>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= ViewBag.AverageRating)
+                        {
+                            <span class="fa fa-star checked"></span>
+                        }
+                        else
+                        {
+                            <span class="fa fa-star"></span>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="wow zoomIn" data-wow-delay="0.9s">
+                    <div class="price-item pb-4">
+                        <div class="position-relative">
+                            <img class="img-fluid rounded-top" src="~/MedicineImages/@Model.Image" alt="">
+                            <div class="d-flex align-items-center justify-content-center bg-light rounded pt-2 px-3 position-absolute top-100 start-50 translate-middle"
+                                 style="z-index: 2;">
+                                <h2 class="text-primary m-0">@Model.UnitPrice</h2>
+                            </div>
+                        </div>
+                        <div class="position-relative text-center bg-light border-bottom border-primary py-5 p-4">
+                            <h4>@Model.MedicineName</h4>
+                            <hr class="text-primary w-50 mx-auto mt-0">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Fast Deleivery</span><i class="fa fa-check text-primary pt-1"></i>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>24/7 Call Support</span><i class="fa fa-check text-primary pt-1"></i>
+                            </div>
+                            @{
+                                if (Model.StockQuantity <= 0)
+                                {
+                                    <button type="submit" disabled class="btn btn-primary py-2 px-4 position-absolute top-100 start-50 translate-middle">No Stock</button>
+                                }
+                                else
+                                {
+                                    <form asp-controller="Home" asp-action="AddCart" method="post">
+                                        <input type="hidden" value="@Model.BatchId" name="BatchId" />
+                                        <input type="hidden" value="@Model.MedicineId" name="MedicineId" />
+                                        <input type="hidden" value="Medicine" name="ProductType" />
+                                        <button type="submit" class="btn btn-primary py-2 px-4 position-absolute top-100 start-50 translate-middle">Add To Cart</button>
+                                    </form>
+                                }
+                            }
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing End -->
+
+    <div class="container-fluid reviewcontainer">
+        <div class="row">
+            <div class="col-md-offset-2 col-md-6">
+                <h4 class="text-center">Customer Reviews</h4>
+                <hr>
+                <div class="reviews">
+                    @if (Model.Reviews != null && Model.Reviews.Any())
+                    {
+                        @foreach (var reviews in Model.Reviews)
+                        {
+
+                            <div class="review">
+                                <div class="review-header">
+                                    <strong>@reviews.User.Name</strong>
+                                    <div class="rating-starss">
+                                        @for (var i = 1; i <= 5; i++)
+                                        {
+
+                                            string check;
+                                            @if (i <= reviews.Rating)
+                                            {
+                                                check = "checked";
+                                            }
+                                            else
+                                            {
+                                                check = "";
+                                            }
+                                            <span class="fa fa-star @check"></span>
+                                        }
+                                        @if (reviews.UserId == Convert.ToInt32(accessor.HttpContext.Session.GetString("id")))
+                                        {
+
+
+                                            <button class="delete-btn" title="Update Review" type="button"
+                                                    data-bs-toggle="modal" data-bs-target="#updateStatusModal">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </button>
+
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="updateStatusModal" tabindex="-1"
+                                                 aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content bg-dark text-light">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" style="color:white;" id="updateStatusModalLabel">
+                                                                Update
+                                                                Comment
+                                                            </h5>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                        </div>
+                                                        <form asp-controller="Home" asp-action="UpdateReview"
+                                                              method="POST">
+                                                            <input type="hidden" name="reviewId" value="@reviews.Id" />
+                                                            <input type="hidden" name="productId" value="@Model.MedicineId" />
+                                                            <input type="hidden" name="productType" value="Medicine" />
+                                                            <div class="modal-body">
+
+                                                                <label for="feedback" class="form-label mt-3">
+                                                                    Your
+                                                                    Comment:
+                                                                </label>
+                                                                <textarea name="comment" id="feedback" class="form-control bg-dark text-light" rows="4"
+                                                                          placeholder="Enter your feedback here..." required>@reviews.Comment</textarea>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">
+                                                                    Cancel
+                                                                </button>
+                                                                <button type="submit"
+                                                                        class="btn btn-success">
+                                                                    Submit
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <form asp-controller="Home" asp-action="DeleteReview"
+                                                  method="POST" class="delete-review-form">
+                                                <input type="hidden" name="reviewId" value="@reviews.Id" />
+                                                <input type="hidden" name="productId" value="@Model.MedicineId" />
+                                                <input type="hidden" name="productType" value="Medicine" />
+                                                <button type="submit" class="delete-btn" title="Delete Review">
+                                                    <i class="fa fa-times" aria-hidden="true"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="review-body">
+                                    <p>@reviews.Comment</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+
+                        if (accessor.HttpContext.Session.Keys.Contains("id"))
+                        {
+
+                            <p class="text-center">No reviews yet. Be the first to review!</p>
+                        }
+                        else
+                        {
+
+                            <p class="text-center">No reviews yet</p>
+                        }
+
+                    }
+                </div>
+                <hr>
+
+                @if (ViewBag.completedOrder > 0 && ViewBag.submitReview == 0)
+                {
+
+
+                    <h5>Submit Your Review</h5>
+                    <form asp-controller="Home" asp-action="Feedback" method="POST">
+                        <input type="hidden" name="productId" value="@Model.MedicineId" />
+                        <input type="hidden" name="productType" value="Medicine" />
+                        <div class="form-group">
+                            <label for="rating">Rating:</label>
+                            <div class="rating-stars" style="cursor: pointer; color: gray;">
+                                @for (var i = 1; i <= 5; i++)
+                                {
+
+                                    <span class="fa fa-star" data-value="@i"></span>
+                                }
+
+                            </div>
+                            <input type="hidden" name="rating" id="rating" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Your Review:</label>
+                            <textarea class="form-control" name="comment" id="comment" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-warning submit-review">Submit Review</button>
+                    </form>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const stars = document.querySelectorAll('.rating-stars .fa-star');
+                            const ratingInput = document.getElementById('rating');
+
+                            stars.forEach(star => {
+                                star.addEventListener('click', function() {
+                                    const rating = this.getAttribute('data-value');
+                                    ratingInput.value = rating;
+
+                                    stars.forEach(s => s.classList.remove('checked'));
+                                    for (let i = 0; i < rating; i++) {
+                                        stars[i].classList.add('checked');
+                                    }
+                                });
+                            });
+                        });
+
+                        const style = document.createElement('style');
+                        style.innerHTML = `
+                                    .rating-stars .fa-star.checked {
+                                        color: #FFD700; /* Gold color for stars */
+                                    }
+                                `;
+                        document.head.appendChild(style);
+                    </script>
+                }
+                else if (ViewBag.submitReview > 0)
+                {
+
+                    <p class="text-center">You have already submitted the review!</p>
+                }
+                else if (ViewBag.pendingOrder > 0)
+                {
+
+                    <p class="text-center">Your Order is Pending!</p>
+                }
+                else
+                {
+                    if (accessor.HttpContext.Session.Keys.Contains("id"))
+                    {
+                        <p class="text-center">You have to purchase to leave the comment!</p>
+
+                    }
+                    else
+                    {
+
+                        <p class="text-center">You need to login to leave a comment <a asp-controller="User" asp-action="Login"><b>Click Here to Login</b></a></p>
+                    }
+                }
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const stars = document.querySelectorAll('.rating-stars .fa-star');
+        const ratingInput = document.getElementById('rating');
+
+        // Function to set stars based on the rating value
+        function setStars(rating) {
+            stars.forEach((star, index) => {
+                star.classList.toggle('checked', index < rating);
+            });
+        }
+
+        // Click event for rating stars
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-value');
+                ratingInput.value = rating; // Set the rating in the hidden input
+                setStars(rating); // Update star display
+            });
+        });
+
+        // Check if there is an existing rating and set the stars accordingly
+        const existingRating = ratingInput.value; // This should contain the existing rating if any
+        if (existingRating) {
+            setStars(existingRating);
+        }
+
+        // Read more functionality
+        const readMoreLink = document.querySelector('.read-more');
+        const shortDescription = document.querySelector('.short-description');
+        const fullDescription = document.querySelector('.full-description');
+
+        readMoreLink.addEventListener('click', function() {
+            const isExpanded = fullDescription.style.display === 'inline';
+            fullDescription.style.display = isExpanded ? 'none' : 'inline';
+            shortDescription.style.display = isExpanded ? 'inline' : 'none';
+            this.textContent = isExpanded ? 'Read more' : 'Show less';
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const deleteForms = document.querySelectorAll(".delete-review-form");
+
+        deleteForms.forEach(form => {
+            form.addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent direct form submission
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You want to delete this review!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Submit form if user confirms
+                    }
+                });
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                        Swal.fire({
+                            title: 'Error!',
+                        text: '@TempData["error"]',
+                        icon: 'error',
+                        confirmButtonText: 'Okay'
+                                                    });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                            Swal.fire({
+                                title: 'Error!',
+                            text: '@TempData["success"]',
+                            icon: 'error',
+                            confirmButtonText: 'Okay'
+                                                        });
+        </text>
+    }
+    @if (TempData["successLogin"] != null)
+    {
+        <text>
+                    toastr.success('@TempData["successLogin"]');
+        </text>
+    }
+                        });
+</script>

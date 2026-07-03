@@ -1,0 +1,226 @@
+﻿@model List<Clinic_Management.Models.MedicalInstrument>
+
+<h2>Medicine Stock Report</h2>
+<h2>Medicine Stock Report</h2>
+<h2 class="text-center">Machines</h2>
+<a class="btn btn-primary" asp-controller="Pharmacist" asp-action="CreateMachine">Add Machine</a>
+@{
+    var stockAlerts = ViewBag.stockAlert as List<MedicalInstrument>;
+}
+
+@if (stockAlerts != null)
+{
+    @foreach (var medical in stockAlerts)
+    {
+
+        <div class="alert alert-warning" role="alert">
+            ⚠️ Low Stock Alert!
+            Medicine: <b>@medical.Name</b>
+            Company: <b>@medical.Manufacturer</b>
+            Current Stock: <b>@medical.StockQuantity</b>
+            Reorder Level: <b>@medical.ReorderLevel</b>
+            📌 Please restock soon!
+        </div>
+
+    }
+}
+<div style="display: flex; place-items:center;">
+
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Machine Name</th>
+                <th>Category</th>
+                <th>Added By</th>
+                <th>Manufacturer</th>
+                <th>Manufacturer Email</th>
+                <th>Stock</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+
+                foreach (var medical in Model)
+                {
+                    <tr>
+                        <td>@medical.Name</td>
+                        <td>@medical.Category?.Name</td>
+                        <td>@medical.Technician?.Name</td>
+                        <td>@medical.Manufacturer</td>
+                        <td>@medical.ManufacturerEmail</td>
+                        <td>@medical.StockQuantity</td>
+                        <td><img height="120px" src="~/MachinesImages/@medical.Image"/></td>
+                        <td>
+                            <button class="btn btn-info m-1 btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal2_@medical.Id">
+                                Add Quantity
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade open-modal" id="exampleModal2_@medical.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel2_@medical.Id">Add Quantity Of Medicine</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form asp-controller="Pharmacist" asp-action="AddMachineQuantity" method="post">
+                                            <input type="hidden" name="machineId" value="@medical.Id">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="appointmentDate" class="form-label">Quantity</label>
+                                                    <input type="number" name="quantity" class="form-control" placeholder="Enter Quantity" />
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Add</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary m-1 btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal_@medical.Id">
+                                Send Email
+                            </button>
+                            <a asp-controller="Pharmacist" asp-action="EditMachine" asp-route-id="@medical.Id" class="btn btn-primary btn-sm">Edit</a>
+
+                        </td>
+                        <!-- Modal -->
+                        <div class="modal fade open-modal" id="exampleModal_@medical.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel_@medical.Id">Mail To Company</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form asp-controller="Pharmacist" asp-action="SendMachineMail" method="post">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="appointmentDate" class="form-label">Medicine Name</label>
+                                                <input type="text" name="medicineName" value="@medical.Name" readonly class="form-control" />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="appointmentTime" class="form-label">Medicine Quantity</label>
+                                                <input type="number" name="quantity" value="10" class="form-control" />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="appointmentTime" class="form-label">Medicine Companies</label>
+                                                <select name="companyEmail" class="form-control">
+                                                    <option selected disabled>Select Company</option>
+                                                    @foreach (var companies in ViewBag.companies)
+                                                    {
+                                                        <option value="@companies">@companies</option>
+                                                    }
+                                                </select>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Send Email</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </tr>
+                }
+            }
+
+
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center">No Machine Available</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+
+
+<div></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    $(document).ready(function () {
+    @if (TempData["error"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Error!',
+                    text: '@TempData["error"]',
+                    icon: 'error',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                                                                                        });
+        </text>
+    }
+    @if (TempData["success"] != null)
+    {
+        <text>
+                    Swal.fire({
+                        title: 'Done!',
+                    text: '@TempData["success"]',
+                    icon: 'success',
+                    confirmButtonText: 'Okay'
+                                                                                                                                                                                                                                });
+        </text>
+    }
+                                                                                                });
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".disable_btn").on('click', function (e) {
+            var batchId = $(this).data("batch-id");
+            var isDisabled = $(this).hasClass("btn-warning");
+
+            var actionText = isDisabled ? "disable" : "enable";
+            var confirmText = isDisabled ? "Yes, Disable Batch" : "Yes, Enable Batch";
+            var successText = isDisabled ? "Batch Disabled Successfully!" : "Batch Enabled Successfully!";
+            var newBtnClass = isDisabled ? "btn-dark" : "btn-warning";
+            var newBtnText = isDisabled ? "Enable" : "Disable";
+
+            Swal.fire({
+                title: actionText.charAt(0).toUpperCase() + actionText.slice(1) + " Batch!",
+                text: "Are you sure you want to " + actionText + " this batch?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: confirmText,
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Pharmacist/DisableBatch',
+                        type: 'POST',
+                        data: { batchId: batchId },
+                        success: function (response) {
+                            Swal.fire({
+                                title: successText,
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'Okay',
+                            }).then(() => {
+                                var btn = $(".disable_btn[data-batch-id='" + batchId + "']");
+                                btn.toggleClass("btn-warning btn-dark");
+                                btn.text(newBtnText);
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+
+</script>

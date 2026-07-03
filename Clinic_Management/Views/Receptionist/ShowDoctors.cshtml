@@ -1,0 +1,27 @@
+﻿@model List<Clinic_Management.Models.User>
+
+    <h2>Medicine Stock Report</h2>
+<h2>Medicine Stock Report</h2>
+<h2 class="text-center">Doctors</h2>
+
+
+<table class="table table-striped table-hover table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Doctor</th>
+            <th>Slots</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var doctors in Model)
+        {
+
+            <tr>
+                <td>@doctors.Id</td>
+                <td>@doctors.Name</td>
+                <td><a asp-controller="Receptionist" asp-action="ShowSlots" asp-route-id="@doctors.Id" class="btn btn-primary btn-sm">Slots</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

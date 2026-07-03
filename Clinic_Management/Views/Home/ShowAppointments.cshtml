@@ -1,0 +1,221 @@
+﻿@model Clinic_Management.Models.Manage_Appointment
+
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Start End Time</th>
+            <th>Status</th>
+            <th>Created Time</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in Model.All_Appointment)
+        {
+
+            <tr>
+                <td>@patient.Id</td>
+                <td>@patient.PatientUser.Name</td>
+                <td>@patient.DoctorUser.Name</td>
+                <td>@patient.TimeSlot.Date</td>
+                <td>@patient.TimeSlot.StartTime - @patient.TimeSlot.EndTime</td>
+                <td>@patient.Status</td>
+                <td>@patient.Created_at</td>
+                <td>
+                    @{
+                        if (patient.Status == Appointments._Status.Scheduled)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary open-modal"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal_@patient.Id"
+                                    data-doctor-id="@patient.DoctorId"
+                                    data-selected-date="@patient.TimeSlot.Date">
+                                Reschedule
+                            </button>
+
+                            <button type="button" class="btn btn-danger cancel-appointment" data-appointment-id="@patient.Id">
+                                Cancel
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade open-modal" id="exampleModal_@patient.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel_@patient.Id">Reschedule Appointment</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form id="appointmentForm">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="appointmentDate" class="form-label">Appointment Date</label>
+                                                    <select name="dateId" id="dateId_@patient.Id" class="form-control date-dropdown" data-patient-id="@patient.Id">
+                                                        @foreach (var date in Model.TimeSlot.Select(t => t.Date).Distinct())
+                                                        {
+                                                            var formattedDate = date.ToString("yyyy-MM-dd");
+                                                            bool isSelected = formattedDate == patient.TimeSlot.Date.ToString("yyyy-MM-dd");
+                                                            <option value="@formattedDate" selected="@isSelected">@formattedDate</option>
+                                                        }
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="appointmentTime" class="form-label">Appointment Time</label>
+                                                    <select name="time" id="time_@patient.Id" class="form-control time-dropdown">
+                                                        @foreach (var time in Model.TimeSlot
+                                                   .Where(t => t.Date == patient.TimeSlot.Date && (t.Status == 0 || (t.StartTime == patient.TimeSlot.StartTime && t.EndTime == patient.TimeSlot.EndTime)))
+                                                   .Select(t => new { Text = $"{t.StartTime} - {t.EndTime}", Value = t.Id }))
+                                                        {
+                                                            bool isSelected = time.Text == $"{patient.TimeSlot.StartTime} - {patient.TimeSlot.EndTime}";
+                                                            <option value="@time.Value" selected="@isSelected">@time.Text</option>
+                                                        }
+                                                    </select>
+
+
+                                                </div>
+
+                                                
+
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                
+                                                <button type="button" class="btn btn-primary save-appointment" data-patient-id="@patient.Id">
+                                                    Save Appointment
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                        }
+                        else if (patient.Status == Appointments._Status.Cancelled)
+                        {
+                            <button class="btn btn-warning" style="cursor: not-allowed;">Cancelled</button>
+                        }
+                        else
+                        {
+                            <p class="text-dark">Not Approve</p>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".date-dropdown").change(function () {
+            var selectedDate = $(this).val();
+            var patientId = $(this).data("patient-id");
+            var timeDropdown = $("#time_" + patientId);
+
+            $.ajax({
+                url: "/Receptionist/GetAppointmentTimes",
+                type: "GET",
+                data: { date: selectedDate, patientId: patientId },
+                dataType: "json",
+                success: function (data) {
+                    timeDropdown.empty();
+
+                    $.each(data, function (index, time) {
+                        var option = $("<option></option>")
+                            .attr("value", time.value)
+                            .text(time.text);
+
+                        if (time.selected) {
+                            option.attr("selected", "selected");
+                        }
+
+                        timeDropdown.append(option);
+                    });
+                },
+                error: function () {
+                    console.error("Error fetching times.");
+                }
+            });
+        });
+
+        $(".save-appointment").click(function () {
+            var patientId = $(this).data("patient-id");
+            var selectedDate = $("#dateId_" + patientId).val();
+            var selectedTime = $("#time_" + patientId).val();
+
+            if (!selectedDate || !selectedTime) {
+                alert("Please select a valid date and time.");
+                return;
+            }
+            // alert(selectedDate);
+            // return;
+            $.ajax({
+                url: "/Receptionist/UpdateAppointment",
+                type: "POST",
+                data: { patientId: patientId, dateId: selectedDate, time: selectedTime },
+                success: function (response) {
+                    console.log(response)
+                    Swal.fire({
+                        title: 'Appointment Rescheduled!',
+                        text: 'Appointment Rescheduled Successfully',
+                        icon: 'success',
+                        confirmButtonText: 'Okay',
+                    }).then(() => {
+                        location.reload();
+                    });
+
+                },
+                error: function () {
+                    alert("Error updating appointment.");
+                }
+            });
+        });
+
+        $(".cancel-appointment").on("click", function (e) {
+
+
+            // alert(appointmentId);
+            Swal.fire({
+                title: 'Cancel Appointment!',
+                text: 'Are you sure you want to cancel this appointment?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, Cancel Appointment',
+                cancelButtonText: 'No',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var appointmentId = $(this).data("appointment-id");
+                    $.ajax({
+                        url: "/Receptionist/CancelAppointment",
+                        type: "POST",
+                        data: {
+                            appointmentId: appointmentId
+                        },
+                        dataType: "json",
+                        success: function (response) {
+                            console.log(response)
+                            Swal.fire({
+                        title: 'Appointment Cancel!',
+                        text: 'Appointment Cancelled Successfully',
+                        icon: 'success',
+                        confirmButtonText: 'Okay',
+                    }).then(() => {
+                        location.reload();
+                    });
+                        }
+                    })
+                }
+            });
+
+
+        })
+    });
+</script>
+
+

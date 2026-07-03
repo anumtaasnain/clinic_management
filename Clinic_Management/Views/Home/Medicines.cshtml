@@ -1,0 +1,109 @@
+﻿@model List<Clinic_Management.Models.MedicineViewModel>
+@* <input type="text" placeholder="Search Here" id="search"/> *@
+<!-- Hero Start -->
+<div class="container-fluid bg-primary py-5 hero-header mb-5">
+    <div class="row py-3">
+        <div class="col-12 text-center">
+            <h1 class="display-3 text-white animated zoomIn">Medicines</h1>
+            <a asp-controller="Home" asp-action="Index" class="h4 text-white">Home</a>
+            <i class="far fa-circle text-white px-2"></i>
+            <a href="" class="h4 text-white">Medicines</a>
+        </div>
+    </div>
+</div>
+<!-- Hero End -->
+<!-- Team Start -->
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="row g-5 medicines">
+            <div class="col-lg-4 wow slideInUp" data-wow-delay="0.1s">
+                <div class="section-title bg-light rounded h-100 p-5">
+                    <h5 class="position-relative d-inline-block text-primary text-uppercase">Our Medicines</h5>
+                    <h1 class="display-6 mb-4">Meet Our Certified & Experienced Pharmacists</h1>
+                </div>
+            </div>
+            @foreach (var medicines in Model)
+            {
+
+                <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
+                    <div class="team-item">
+                        <div class="position-relative rounded-top" style="z-index: 1;">
+                            <a asp-controller="Home" asp-action="MedicineDetail" asp-route-id="@medicines.MedicineId">
+                                <img class="img-fluid rounded-top w-100" src="~/MedicineImages/@medicines.Image" alt="">
+                            </a>
+
+                        </div>
+                        <a asp-controller="Home" asp-action="MedicineDetail" asp-route-id="@medicines.MedicineId">
+                            <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
+                                <h4 class="mb-2">@medicines.MedicineName</h4>
+                                <p class="text-primary mb-0">@medicines.CategoryName</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</div>
+<!-- Team End -->
+<script>
+    @if (TempData["successLogin"] != null)
+    {
+        <text>
+                toastr.success('@TempData["successLogin"]');
+        </text>
+    }
+</script>
+<script>
+
+        $(document).ready(function(){
+        $("#search").on('keyup', function(){
+            var search = $("#search").val();
+
+            $.ajax({
+                url: "/Home/SearchMedicine",
+                type: "GET",
+                data: { search: search },
+                success: function(response){
+                    $(".medicines").empty();
+
+                    var output = `<div class="col-lg-4 wow slideInUp" data-wow-delay="0.1s">
+                                    <div class="section-title bg-light rounded h-100 p-5">
+                                        <h5 class="position-relative d-inline-block text-primary text-uppercase">Our Medicines</h5>
+                                        <h1 class="display-6 mb-4">Meet Our Certified & Experienced Pharmacists</h1>
+                                    </div>
+                                  </div>`;
+
+
+                    $.each(response, function(key, value){
+                        console.log(value);
+                        // if (value.medicineId && value.medicineName) {
+                            output += `
+                            <div class="col-lg-4 wow slideInUp" data-wow-delay="0.3s">
+                                <div class="team-item">
+                                    <div class="position-relative rounded-top" style="z-index: 1;">
+                                        <a href="/Home/MedicineDetail/${value.medicineId}">
+                                            <img class="img-fluid rounded-top w-100" src="/MedicineImages/${value.image ? value.image : 'default.png'}" alt="Medicine Image">
+                                        </a>
+                                    </div>
+                                    <a href="/Home/MedicineDetail/${value.medicineId}">
+                                        <div class="team-text position-relative bg-light text-center rounded-bottom p-4 pt-5">
+                                            <h4 class="mb-2">${value.medicineName}</h4>
+                                            <p class="text-primary mb-0">${value.categoryName || 'No Category'}</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>`;
+                        // }
+                    });
+
+                    $(".medicines").append(output);
+                }
+            });
+        });
+    });
+
+
+</script>

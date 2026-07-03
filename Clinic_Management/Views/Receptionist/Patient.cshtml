@@ -1,0 +1,34 @@
+﻿@model List<Clinic_Management.Models.User>
+
+
+<table class="table table-striped table-hover table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Gender</th>
+            <th>Medical History</th>
+            <th>Created Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in Model)
+        {
+
+            <tr>
+                <td>@patient.Id</td>
+                <td>@patient.Name</td>
+                <td>@patient.Email</td>
+                <td>@patient.Phone</td>
+                <td>@patient.Address</td>
+                <td>@patient.Gender</td>
+                <td>@patient.MedicalHistory</td>
+                <td>@patient.Created_at</td>
+
+            </tr>
+        }
+    </tbody>
+</table>

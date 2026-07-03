@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Medicine Stock Report";
+}
+<h2>Medicine Stock Report</h2>
+<h2>Medicine Stock Report</h2>
+<h2 class="text-center">Medicine Stock Report</h2>
+
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Medicine Name</th>
+            <th>Total In</th>
+            <th>Total Out</th>
+            <th>Net Quantity</th>
+            <th>Last Transaction Date</th>
+            <th>Monthly In</th>
+            <th>Monthly Out</th>
+            <th>Batch Stock</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.report != null)
+        {
+            int count = 1;
+            foreach (var item in ViewBag.report)
+            {
+                <tr>
+                    <td>@count</td>
+                    <td>@item.MedicineName</td>
+                    <td>@item.TotalIn</td>
+                    <td>@item.TotalOut</td>
+                    <td>@item.NetQuantity</td>
+                    <td>@item.LastTransactionDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@item.MonthlyIn</td>
+                    <td>@item.MonthlyOut</td>
+                    <td>@item.BatchStock</td>
+                </tr>
+                count++;
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="9" class="text-center">No data available</td>
+            </tr>
+        }
+    </tbody>
+</table>
